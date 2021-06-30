@@ -7,10 +7,12 @@ import com.caionastu.postapi.user.application.request.UpdateUserRequest;
 import com.caionastu.postapi.user.application.request.UserFilterRequest;
 import com.caionastu.postapi.user.application.response.UserResponse;
 import com.caionastu.postapi.user.domain.User;
+import com.caionastu.postapi.user.exception.UserDeactivatedException;
 import com.caionastu.postapi.user.exception.UserEmailAlreadyExistException;
 import com.caionastu.postapi.user.exception.UserNotFoundException;
 import com.caionastu.postapi.user.repository.UserRepository;
 import com.caionastu.postapi.user.repository.UserSpecification;
+import com.caionastu.postapi.user.service.FindUserService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -29,6 +31,7 @@ import java.util.UUID;
 public class UserController {
 
     private final UserRepository repository;
+    private final FindUserService findUserService;
 
     @ApiPageable
     @GetMapping
@@ -47,11 +50,7 @@ public class UserController {
     public ResponseEntity<UserResponse> findById(@PathVariable UUID id) {
         log.info("Receiving request to find user by id: {}.", id);
 
-        User user = repository.findById(id)
-                .orElseThrow(() -> {
-                    log.error("User not found with id: {}.", id);
-                    throw new UserNotFoundException(id);
-                });
+        User user = findUserService.byId(id);
 
         UserResponse response = UserResponse.from(user);
         log.info("User retrieved by id with success.");
@@ -81,10 +80,10 @@ public class UserController {
     public ResponseEntity<Void> updateName(@PathVariable UUID id, @RequestBody @Valid UpdateUserRequest request) {
         log.info("Receiving request to update the name of the user with id: {}. Request: {}", id, request);
 
-        // TODO: 30-Jun-21 Only update if user is active
-        if (!repository.existsById(id)) {
-            log.error("User not found with id: {}.", id);
-            throw new UserNotFoundException(id);
+        User user = findUserService.byId(id);
+        if (!user.isActive()) {
+            log.error("User is deactivated.");
+            throw new UserDeactivatedException(id);
         }
 
         log.info("Updating user name.");
@@ -93,19 +92,35 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
+    @PutMapping(path = "/{id}/activate")
+    public ResponseEntity<Void> activate(@PathVariable UUID id) {
+        log.info("Receiving request to activate user by id: {}.", id);
+
+        User user = findUserService.byId(id);
+        if (user.isActive()) {
+            log.error("User is already activated. Ignoring Request");
+            return ResponseEntity.noContent().build();
+        }
+
+        log.info("Activating user.");
+        repository.activate(id);
+        log.info("User activated.");
+        return ResponseEntity.noContent().build();
+    }
+
     @PutMapping(path = "/{id}/deactivate")
     public ResponseEntity<Void> deactivate(@PathVariable UUID id) {
         log.info("Receiving request to deactivate user by id: {}.", id);
 
-        if (!repository.existsById(id)) {
-            log.error("User not found with id: {}.", id);
-            throw new UserNotFoundException(id);
+        User user = findUserService.byId(id);
+        if (!user.isActive()) {
+            log.error("User is already deactivated. Ignoring Request");
+            return ResponseEntity.noContent().build();
         }
 
         log.info("Deactivating user.");
-        repository.updateActive(id, false);
+        repository.deactivate(id);
         log.info("User deactivated.");
-
         return ResponseEntity.noContent().build();
     }
 

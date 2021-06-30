@@ -23,7 +23,12 @@ public interface UserRepository extends JpaRepository<User, UUID>, JpaSpecificat
 
     @Modifying
     @Transactional
-    @Query("update User user set user.active = :active where user.id = :id")
-    void updateActive(@Param("id") UUID id, @Param("active") boolean active);
+    @Query("update User user set user.active = false where user.id = :id")
+    void deactivate(@Param("id") UUID id);
+
+    @Modifying
+    @Transactional
+    @Query("update User user set user.active = true where user.id = :id")
+    void activate(@Param("id") UUID id);
 
 }
