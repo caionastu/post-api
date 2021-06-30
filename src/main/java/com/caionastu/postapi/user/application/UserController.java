@@ -4,14 +4,15 @@ import com.caionastu.postapi.commons.application.annotation.ApiPageable;
 import com.caionastu.postapi.commons.application.response.ApiCollectionResponse;
 import com.caionastu.postapi.user.application.request.CreateUserRequest;
 import com.caionastu.postapi.user.application.request.UpdateUserRequest;
+import com.caionastu.postapi.user.application.request.UserFilterRequest;
 import com.caionastu.postapi.user.application.response.UserResponse;
 import com.caionastu.postapi.user.domain.User;
 import com.caionastu.postapi.user.exception.UserEmailAlreadyExistException;
 import com.caionastu.postapi.user.exception.UserNotFoundException;
 import com.caionastu.postapi.user.repository.UserRepository;
+import com.caionastu.postapi.user.repository.UserSpecification;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -31,11 +32,10 @@ public class UserController {
 
     @ApiPageable
     @GetMapping
-    public ResponseEntity<ApiCollectionResponse<UserResponse>> findAll(@ApiIgnore Pageable pageable) {
+    public ResponseEntity<ApiCollectionResponse<UserResponse>> findAll(@ApiIgnore Pageable pageable, UserFilterRequest filter) {
         log.info("Receiving request to find all users.");
 
-        // TODO: 30-Jun-21 Filter only active users
-        Page<UserResponse> users = repository.findAll(pageable)
+        Page<UserResponse> users = repository.findAll(UserSpecification.filterRequest(filter), pageable)
                 .map(UserResponse::from);
 
         ApiCollectionResponse<UserResponse> response = ApiCollectionResponse.from(users);
@@ -93,19 +93,19 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping(path = "/{id}")
-    public ResponseEntity<Void> delete(@PathVariable UUID id) {
-        log.info("Receiving request to delete user by id: {}.", id);
+    @PutMapping(path = "/{id}/deactivate")
+    public ResponseEntity<Void> deactivate(@PathVariable UUID id) {
+        log.info("Receiving request to deactivate user by id: {}.", id);
 
-        // TODO: 30-Jun-21 Instead of deleting, set active to false
-        try {
-            repository.deleteById(id);
-        } catch (EmptyResultDataAccessException e) {
-            log.info("User not found with id: {}", id);
+        if (!repository.existsById(id)) {
+            log.error("User not found with id: {}.", id);
             throw new UserNotFoundException(id);
         }
 
-        log.info("User deleted.");
+        log.info("Deactivating user.");
+        repository.updateActive(id, false);
+        log.info("User deactivated.");
+
         return ResponseEntity.noContent().build();
     }
 

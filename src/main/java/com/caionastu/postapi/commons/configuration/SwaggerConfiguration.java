@@ -21,7 +21,7 @@ public class SwaggerConfiguration {
                 .enable(true)
                 .select()
                 .paths(PathSelectors.any())
-                .apis(RequestHandlerSelectors.basePackage("com.caionastu.postapi"))
+                .apis(RequestHandlerSelectors.basePackage("com.caionastu"))
                 .build()
                 .useDefaultResponseMessages(false);
     }
