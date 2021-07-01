@@ -41,7 +41,7 @@ public class UserController {
     public ResponseEntity<ApiCollectionResponse<UserResponse>> findAll(@ApiIgnore Pageable pageable, UserFilterRequest filter) {
         log.info("Receiving request to find all users.");
 
-        Page<UserResponse> users = repository.findAll(UserSpecification.filterRequest(filter), pageable)
+        Page<UserResponse> users = repository.findAll(UserSpecification.from(filter), pageable)
                 .map(UserResponse::from);
 
         ApiCollectionResponse<UserResponse> response = ApiCollectionResponse.from(users);

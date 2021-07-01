@@ -1,5 +1,6 @@
 package com.caionastu.postapi.user.repository;
 
+import com.caionastu.postapi.commons.util.SpecificationUtils;
 import com.caionastu.postapi.user.application.request.UserFilterRequest;
 import com.caionastu.postapi.user.domain.User;
 import lombok.AccessLevel;
@@ -16,9 +17,7 @@ import static org.springframework.data.jpa.domain.Specification.where;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UserSpecification {
 
-    private static final String WILDCARD = "%";
-
-    public static Specification<User> filterRequest(UserFilterRequest filter) {
+    public static Specification<User> from(UserFilterRequest filter) {
         return where(likeName(filter.getName()))
                 .and(equalEmail(filter.getEmail()))
                 .and(isActive(filter.isActive()));
@@ -30,7 +29,7 @@ public class UserSpecification {
         }
 
         return (Root<User> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) ->
-                criteriaBuilder.like(root.get("name"), WILDCARD + name + WILDCARD);
+                criteriaBuilder.like(root.get("name"), SpecificationUtils.likeFormat(name));
     }
 
     private static Specification<User> equalEmail(String email) {
