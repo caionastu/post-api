@@ -5,10 +5,25 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Getter
+import java.util.Objects;
+
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UserFilterRequest {
+
+    @Getter
     private String name;
+
+    @Getter
     private String email;
+
+    private Boolean active;
+
+    public boolean isActive() {
+        if (Objects.isNull(active)) {
+            return true;
+        }
+
+        return active;
+    }
 }

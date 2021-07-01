@@ -30,6 +30,22 @@ public class User {
     @Column
     private boolean active;
 
+    public void activate() {
+        if (active) {
+            return;
+        }
+
+        this.active = true;
+    }
+
+    public void deactivate() {
+        if (!active) {
+            return;
+        }
+
+        active = false;
+    }
+
     public static User from(CreateUserRequest request) {
         User user = new User();
         user.name = request.getName();

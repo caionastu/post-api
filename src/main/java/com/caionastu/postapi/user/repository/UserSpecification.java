@@ -19,7 +19,9 @@ public class UserSpecification {
     private static final String WILDCARD = "%";
 
     public static Specification<User> filterRequest(UserFilterRequest filter) {
-        return where(likeName(filter.getName())).and(equalEmail(filter.getEmail()));
+        return where(likeName(filter.getName()))
+                .and(equalEmail(filter.getEmail()))
+                .and(isActive(filter.isActive()));
     }
 
     private static Specification<User> likeName(String name) {
@@ -38,5 +40,10 @@ public class UserSpecification {
 
         return (Root<User> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) ->
                 criteriaBuilder.equal(root.get("email"), email);
+    }
+
+    private static Specification<User> isActive(boolean active) {
+        return (Root<User> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) ->
+                criteriaBuilder.equal(root.get("active"), active);
     }
 }

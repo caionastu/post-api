@@ -16,11 +16,13 @@ public class UserResponse {
     private UUID id;
     private String name;
     private String email;
+    private boolean active;
 
     public static UserResponse from(User user) {
         return new UserResponse(
                 user.getId(),
                 user.getName(),
-                user.getEmail());
+                user.getEmail(),
+                user.isActive());
     }
 }
