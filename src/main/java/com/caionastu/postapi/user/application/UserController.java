@@ -2,6 +2,7 @@ package com.caionastu.postapi.user.application;
 
 import com.caionastu.postapi.commons.application.annotation.ApiPageable;
 import com.caionastu.postapi.commons.application.response.ApiCollectionResponse;
+import com.caionastu.postapi.commons.util.PageableUtils;
 import com.caionastu.postapi.user.application.request.CreateUserRequest;
 import com.caionastu.postapi.user.application.request.UpdateUserRequest;
 import com.caionastu.postapi.user.application.request.UserFilterRequest;
@@ -18,6 +19,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
@@ -40,7 +42,7 @@ public class UserController {
     @ApiOperation(value = "Search users with filters")
     public ResponseEntity<ApiCollectionResponse<UserResponse>> findAll(@ApiIgnore Pageable pageable, UserFilterRequest filter) {
         log.info("Receiving request to find all users.");
-
+        pageable = PageableUtils.sort(pageable, "name");
         Page<UserResponse> users = repository.findAll(UserSpecification.from(filter), pageable)
                 .map(UserResponse::from);
 
@@ -53,9 +55,7 @@ public class UserController {
     @ApiOperation(value = "Search user by id")
     public ResponseEntity<UserResponse> findById(@PathVariable UUID id) {
         log.info("Receiving request to find user by id: {}.", id);
-
         User user = findUserService.byId(id);
-
         UserResponse response = UserResponse.from(user);
         log.info("User retrieved by id with success.");
         return ResponseEntity.ok(response);
@@ -85,7 +85,6 @@ public class UserController {
     @ApiOperation("Update the user name")
     public ResponseEntity<Void> updateName(@PathVariable UUID id, @RequestBody @Valid UpdateUserRequest request) {
         log.info("Receiving request to update the name of the user with id: {}. Request: {}", id, request);
-
         User user = findUserService.byId(id);
         if (!user.isActive()) {
             log.error("User is deactivated.");
@@ -102,7 +101,6 @@ public class UserController {
     @ApiOperation(value = "Activate a user")
     public ResponseEntity<Void> activate(@PathVariable UUID id) {
         log.info("Receiving request to activate user by id: {}.", id);
-
         User user = findUserService.byId(id);
         if (user.isActive()) {
             log.error("User is already activated. Ignoring Request");

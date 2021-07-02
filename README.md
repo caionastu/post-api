@@ -13,8 +13,8 @@ Simple API to create user, post and comment
     - Only post's owner can exclude its posts
     - Only active user can create and delete post
     - Title can't be empty or null
-    - Title can contain special characters and white spaces
-    - Title max size is 30 characters
+    - Title can contain any text
+    - Title min size is 4 max size is 30 characters
     - Body can contain any text
     - Body min size is 1 and max size is 150
 - Comment CRUD

@@ -24,11 +24,4 @@ public class FindUserService {
                 });
     }
 
-    public void existsById(UUID id) {
-        if(!repository.existsById(id)){
-            log.error("User not found with id: {}.", id);
-            throw new UserNotFoundException(id);
-        }
-    }
-
 }

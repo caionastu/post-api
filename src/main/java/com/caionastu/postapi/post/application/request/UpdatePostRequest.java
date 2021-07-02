@@ -13,7 +13,7 @@ import java.util.UUID;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor
-public class CreatePostRequest {
+public class UpdatePostRequest {
 
     @NotNull(message = "{post.user.notNull}")
     private UUID userId;
