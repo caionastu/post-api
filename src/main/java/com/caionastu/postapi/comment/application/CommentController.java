@@ -1,8 +1,5 @@
 package com.caionastu.postapi.comment.application;
 
-import com.caionastu.postapi.comment.application.exception.CommentNotFoundException;
-import com.caionastu.postapi.comment.application.exception.UserDeleteCommentPermissionException;
-import com.caionastu.postapi.comment.application.exception.UserUpdateCommentPermissionException;
 import com.caionastu.postapi.comment.application.request.CommentFilterRequest;
 import com.caionastu.postapi.comment.application.request.CreateCommentRequest;
 import com.caionastu.postapi.comment.application.request.UpdateCommentRequest;
@@ -13,10 +10,6 @@ import com.caionastu.postapi.comment.repository.CommentRepository;
 import com.caionastu.postapi.comment.repository.CommentSpecification;
 import com.caionastu.postapi.commons.application.response.ApiCollectionResponse;
 import com.caionastu.postapi.commons.util.PageableUtils;
-import com.caionastu.postapi.post.domain.Post;
-import com.caionastu.postapi.post.service.FindPostService;
-import com.caionastu.postapi.user.domain.User;
-import com.caionastu.postapi.user.service.FindUserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
