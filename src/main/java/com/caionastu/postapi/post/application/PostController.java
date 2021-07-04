@@ -10,9 +10,7 @@ import com.caionastu.postapi.post.application.response.PostResponse;
 import com.caionastu.postapi.post.domain.Post;
 import com.caionastu.postapi.post.repository.PostRepository;
 import com.caionastu.postapi.post.repository.PostSpecification;
-import com.caionastu.postapi.post.service.CreatePostService;
-import com.caionastu.postapi.post.service.DeletePostService;
-import com.caionastu.postapi.post.service.UpdatePostService;
+import com.caionastu.postapi.post.service.CrudPostService;
 import com.caionastu.postapi.user.domain.User;
 import com.caionastu.postapi.user.service.FindUserService;
 import io.swagger.annotations.Api;
@@ -38,9 +36,7 @@ public class PostController {
 
     private final PostRepository repository;
     private final FindUserService findUserService;
-    private final CreatePostService createService;
-    private final UpdatePostService updateService;
-    private final DeletePostService deleteService;
+    private final CrudPostService service;
 
     @ApiPageable
     @GetMapping(path = "/user/{userId}")
@@ -68,7 +64,7 @@ public class PostController {
     @ApiOperation("Create a new post")
     public ResponseEntity<PostResponse> create(@RequestBody @Valid CreatePostRequest request) {
         log.info("Receiving request to create a new post. Request: {}.", request);
-        Post newPost = createService.create(request);
+        Post newPost = service.create(request);
         PostResponse response = PostResponse.from(newPost);
         return ResponseEntity.ok(response);
     }
@@ -77,15 +73,16 @@ public class PostController {
     @ApiOperation("Update title and body of the post")
     public ResponseEntity<PostResponse> update(@PathVariable UUID id, @RequestBody @Valid UpdatePostRequest request) {
         log.info("Receiving request to update a post with id: {}. Request: {}.", id, request);
-        Post post = updateService.update(id, request);
+        Post post = service.update(id, request);
         PostResponse response = PostResponse.from(post);
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping(path = "/{id}")
+    @ApiOperation("Delete a post")
     public ResponseEntity<Void> delete(@PathVariable UUID id, @RequestParam(name = "userId") UUID userId) {
-        log.info("Receiving request to delete post with id: {}.", id);
-        deleteService.delete(id, userId);
+        log.info("Receiving request to delete post with id: {}, by user id: {}.", id, userId);
+        service.delete(id, userId);
         return ResponseEntity.noContent().build();
     }
 }

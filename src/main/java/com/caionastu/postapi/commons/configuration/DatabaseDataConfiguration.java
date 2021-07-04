@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.time.ZonedDateTime;
+import java.util.List;
 
 @Slf4j
 @Configuration
@@ -28,11 +29,11 @@ public class DatabaseDataConfiguration {
 
             log.info("{}", user);
 
-            Post post = new Post(null, "Post Title", "Post content body", ZonedDateTime.now(), user);
-            Post post2 = new Post(null, "Post Title 2", "Post content body", ZonedDateTime.now(), user);
-            Post post3 = new Post(null, "Post Title 3", "Post content body", ZonedDateTime.now(), user);
-            Post post4 = new Post(null, "Post Title 4", "Post content body", ZonedDateTime.now(), user);
-            Post post5 = new Post(null, "Post Title 5", "Post content body", ZonedDateTime.now(), user);
+            Post post = new Post(null, "Post Title", "Post content body", ZonedDateTime.now(), user, List.of());
+            Post post2 = new Post(null, "Post Title 2", "Post content body", ZonedDateTime.now(), user, List.of());
+            Post post3 = new Post(null, "Post Title 3", "Post content body", ZonedDateTime.now(), user, List.of());
+            Post post4 = new Post(null, "Post Title 4", "Post content body", ZonedDateTime.now(), user, List.of());
+            Post post5 = new Post(null, "Post Title 5", "Post content body", ZonedDateTime.now(), user, List.of());
             postRepository.save(post);
             postRepository.save(post2);
             postRepository.save(post3);
